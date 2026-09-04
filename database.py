@@ -34,9 +34,6 @@ class Data_base:
             PRIMARY KEY(CNPJ)
             );
 
-           
-        
-        
         """)
     
     def register_company(self, fullDataSet):

@@ -32,14 +32,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
     ###########################################################################################
     #PREENCHER AUTOMATICAMENTE TODOS OS CAMPOS
-    
     self.txt_cnpj.editingFinished.connect(self.consult_api)
     ###########################################################################################
     
     ###########################################################################################
     #CADASTRAR EMPRESAS
     self.btn_cadastrar_emp.clicked.connect(self.cadastrar_empresas)
-
+    ###########################################################################################
+    
+    ###########################################################################################
+    #BUSCAR EMPRESAS
+    #self..clicked.connect(self.excluir_empresas)
+    ###########################################################################################
 
   
   def leftMenu(self):
@@ -72,6 +76,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     self.txt_email.setText(campos[9])
   
   def cadastrar_empresas(self):
+    
     db = Data_base()
     db.connect()
     
@@ -101,6 +106,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
       msg.exec()
       db.close_connection()
       return
+    
+  def buscas_empresas(self):
+    db = Data_base()
+    db.connect()
+    result = db.select_all_companies()
+    
+    self.tb_company.clearContents()
+    self.tb_company.setRowCount(len(result))
+
+    
+  
+    
+
     
 if __name__ == "__main__":
   
