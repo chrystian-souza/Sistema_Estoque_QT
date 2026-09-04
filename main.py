@@ -84,13 +84,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     #CADASTRAR NO BANCO DE DADOS
     resp = db.register_company(fullDataSet)
     
-    if resp == "ok":
+    if resp == "OK":
       msg = QMessageBox()
       msg.setIcon(QMessageBox.Information)
       msg.setWindowTitle("Casdastro Realizado")
       msg.setText("Cadastro Realizado com sucesso")
       msg.exec()
       db.close_connection()
+      
       return
     else:
       msg = QMessageBox()
