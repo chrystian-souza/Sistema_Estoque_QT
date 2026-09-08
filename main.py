@@ -2,7 +2,7 @@ from PySide6.QtCore import QCoreApplication
 from PySide6.QtGui import QIcon
 from PySide6 import QtCore
 import icone__rc
-from PySide6.QtWidgets import (QApplication, QMainWindow, QMessageBox)
+from PySide6.QtWidgets import (QApplication, QMainWindow, QMessageBox, QTableWidgetItem)
 from principal_ui import Ui_MainWindow
 import sys
 from ui_functions import consulta_cnpj
@@ -44,7 +44,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     #BUSCAR EMPRESAS
     #self..clicked.connect(self.excluir_empresas)
     ###########################################################################################
-
+    self.buscas_empresas()
   
   def leftMenu(self):
     width = self.left_menu.width()
@@ -114,9 +114,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
     self.tb_company.clearContents()
     self.tb_company.setRowCount(len(result))
-
+    print(result)
     
-  
+    for row, text in enumerate(result):
+      for column, data in enumerate(text):
+        self.tb_company.setItem(row, column, QTableWidgetItem(str(data)))
+        
+    db.close_connection()
+
+  def update_empresas(self):
+    
+    dados = []
+    update_dados = []
+    
+    for row in range(self.tb_company.rowCount()):
+      for column in range(self.tb_company.columnCount()):
+        dados.append(self.tb_company.item(row, column).text())
+        print(dados)
+    
     
 
     
