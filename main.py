@@ -17,10 +17,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     appIcon = QIcon("")
     self.setWindowIcon(appIcon)
 
-    #########################################
-    #TOGLE BUTTON
-    self.btn_toogle.clicked.connect(self.leftMenu)
-    #########################################
+   
 
     #########################################
     #PAGINAS DO SISTEMA
@@ -39,10 +36,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     #CADASTRAR EMPRESAS
     self.btn_cadastrar_emp.clicked.connect(self.cadastrar_empresas)
     ###########################################################################################
-    
+    ###########################################################################################
+    #ATUALIZAR DADOS
+    self.btn_alterar.clicked.connect(self.update_empresas)
     ###########################################################################################
     #BUSCAR EMPRESAS
     #self..clicked.connect(self.excluir_empresas)
+    ###########################################################################################
+    ###########################################################################################
+    #TOGLE BUTTON
+    self.btn_toogle.clicked.connect(self.leftMenu)
     ###########################################################################################
     self.buscas_empresas()
   
@@ -128,12 +131,37 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     update_dados = []
     
     for row in range(self.tb_company.rowCount()):
+      
+      dados = []
+      
       for column in range(self.tb_company.columnCount()):
         dados.append(self.tb_company.item(row, column).text())
-        print(dados)
+        
+        update_dados.append(dados)
+        
+        
     
+      #ATUALIZA DADOS DO BANCO
+      db = Data_base()
+      db.connect()
+      
+      print("update_dados:", update_dados)
+      print("quantidade:", len(update_dados))
+      
+      for emp in update_dados:
+          db.update_company(tuple(emp))
+      
+      db.close_connection() 
+      
+      msg = QMessageBox()
+      msg.setIcon(QMessageBox.Information)
+      msg.setWindowTitle('Atualização de dados')
+      msg.setText('Dados atualizados com secesso!')
+      msg.exec()
+      
+      self.tb_company.reset()
+      self.buscas_empresas()
     
-
     
 if __name__ == "__main__":
   

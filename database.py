@@ -1,8 +1,9 @@
 import sqlite3
 
+
 class Data_base:
 
-    def __init__(self, name = 'system.db') -> None:        
+    def __init__(self, name="system.db") -> None:
         self.name = name
 
     def connect(self):
@@ -13,7 +14,7 @@ class Data_base:
             self.connection.close()
         except:
             pass
-    
+
     def create_table_company(self):
         cursor = self.connection.cursor()
         cursor.execute("""
@@ -35,20 +36,34 @@ class Data_base:
             );
 
         """)
-    
+
     def register_company(self, fullDataSet):
 
-        campos_tabela = ('CNPJ','NOME','LOGRADOURO','NUMERO','COMPLEMENTO','BAIRRO','MUNICIPIO',
-        'UF','CEP','TELEFONE','EMAIL')
+        campos_tabela = (
+            "CNPJ",
+            "NOME",
+            "LOGRADOURO",
+            "NUMERO",
+            "COMPLEMENTO",
+            "BAIRRO",
+            "MUNICIPIO",
+            "UF",
+            "CEP",
+            "TELEFONE",
+            "EMAIL",
+        )
 
-        qntd = ("?,?,?,?,?,?,?,?,?,?,?")
+        qntd = "?,?,?,?,?,?,?,?,?,?,?"
         cursor = self.connection.cursor()
 
         try:
-            cursor.execute(f"""INSERT INTO Empresa {campos_tabela}
-            VALUES({qntd})""", fullDataSet)
+            cursor.execute(
+                f"""INSERT INTO Empresa {campos_tabela}
+            VALUES({qntd})""",
+                fullDataSet,
+            )
             self.connection.commit()
-            return("OK")
+            return "OK"
 
         except:
             return "Erro"
