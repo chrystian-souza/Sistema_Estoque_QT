@@ -1,3 +1,4 @@
+import sqlite3
 from PySide6.QtCore import QCoreApplication
 from PySide6.QtGui import QIcon
 from PySide6 import QtCore
@@ -7,6 +8,7 @@ from principal_ui import Ui_MainWindow
 import sys
 from ui_functions import consulta_cnpj
 from database import Data_base
+import pandas as pd
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -16,7 +18,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     self.setWindowTitle("teste")
     appIcon = QIcon("")
     self.setWindowIcon(appIcon)
-
    
 
     #########################################
@@ -46,6 +47,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     ###########################################################################################
     #TOGLE BUTTON
     self.btn_toogle.clicked.connect(self.leftMenu)
+    ###########################################################################################
+    ###########################################################################################
+    #EXCLUIR EMPRESAS
+    self.btn_excluir.clicked.connect(self.delete_empresa)
+    ###########################################################################################
+    #GERAR EXCEL
+    self.btn_exel.clicked.connect(self.gerar_exel)
     ###########################################################################################
     self.buscas_empresas()
   
@@ -99,6 +107,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
       msg.setText("Cadastro Realizado com sucesso")
       msg.exec()
       db.close_connection()
+      self.buscas_empresas()
       
       return
     else:
@@ -126,43 +135,103 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     db.close_connection()
 
   def update_empresas(self):
-    
-    dados = []
     update_dados = []
-    
+
+    # PEGAR TODOS OS DADOS DA TABELA
     for row in range(self.tb_company.rowCount()):
-      
-      dados = []
-      
-      for column in range(self.tb_company.columnCount()):
-        dados.append(self.tb_company.item(row, column).text())
-        
+        dados = []
+
+        for column in range(self.tb_company.columnCount()):
+            dados.append(self.tb_company.item(row, column).text())
+
         update_dados.append(dados)
-        
-        
+
+    # ATUALIZAR DADOS DO BANCO
+    db = Data_base()
+    db.connect()
+
+    for emp in update_dados:
+        db.update_company(tuple(emp))
+
+    db.close_connection()
+
+    # MENSAGEM
+    msg = QMessageBox()
+    msg.setIcon(QMessageBox.Information)
+    msg.setWindowTitle("Atualização de dados")
+    msg.setText("Dados atualizados com sucesso!")
+    msg.exec()
+
+    # ATUALIZAR A TABELA
+    self.buscas_empresas()
     
-      #ATUALIZA DADOS DO BANCO
-      db = Data_base()
-      db.connect()
-      
-      print("update_dados:", update_dados)
-      print("quantidade:", len(update_dados))
-      
-      for emp in update_dados:
-          db.update_company(tuple(emp))
-      
-      db.close_connection() 
+  def delete_empresa(self):
+    
+
+    db = Data_base()
+    db.connect()
+    
+    msg = QMessageBox()
+    msg.setIcon(QMessageBox.Information)
+    msg.setWindowTitle('Excluir')
+    msg.setText('Esse registro será excluido.')
+    msg.setInformativeText('Você tem certeza que deseja excluir?')
+    msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+    resp = msg.exec()
+    
+    if resp == QMessageBox.Yes:
+      cnpj = self.tb_company.selectionModel().currentIndex().siblingAtColumn(0).data()
+      result = db.delete_companies(cnpj)
+      self.buscas_empresas()
       
       msg = QMessageBox()
       msg.setIcon(QMessageBox.Information)
-      msg.setWindowTitle('Atualização de dados')
-      msg.setText('Dados atualizados com secesso!')
+      msg.setInformativeText('EMPRESAS')
+      msg.setText(result)
       msg.exec()
       
-      self.tb_company.reset()
-      self.buscas_empresas()
+    db.close_connection() 
     
-    
+  def gerar_exel(self):
+    cnx = None
+    try:
+        cnx = sqlite3.connect('system.db')
+        empresas = pd.read_sql_query('SELECT * FROM Empresa', cnx)
+        caminho_salvar = r"C:\Users\chrystian\Documents\Empresas.xlsx"
+
+        # A operação que está falhando DEVE ficar dentro do try:
+        empresas.to_excel(caminho_salvar, sheet_name='empresas', index=False)
+
+        # Pop-up de Sucesso no Front
+        QMessageBox.information(
+            self,
+            "Excel",
+            "Relatório Excel gerado com sucesso!"
+        )
+
+    except PermissionError:
+        # Pop-up específico para arquivo em uso no Excel
+        QMessageBox.warning(
+            self,
+            "Arquivo Bloqueado",
+            "Não foi possível salvar o arquivo!\n\n"
+            "O arquivo 'Empresas.xlsx' já está aberto no Excel ou em outro programa. "
+            "Feche-o e tente novamente."
+        )
+
+    except Exception as e:
+        # Qualquer outro tipo de falha
+        QMessageBox.critical(
+            self,
+            "Erro",
+            f"Ocorreu um erro ao gerar o relatório:\n{e}"
+        )
+
+    finally:
+        if cnx is not None:
+            cnx.close()
+            
+            
 if __name__ == "__main__":
   
   db = Data_base()

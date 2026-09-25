@@ -28,7 +28,32 @@ class Ui_MainWindow(object):
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(1106, 725)
         MainWindow.setMaximumSize(QSize(16777215, 16777215))
-        MainWindow.setStyleSheet(u"background-color: rgb(0, 0, 0);")
+        MainWindow.setStyleSheet(u"/* Mant\u00e9m seu estilo atual acima e adicione isso no final: */\n"
+"\n"
+"QMainWindow, #centralwidget {\n"
+"    background-color: #121212;  /* Coloque aqui a cor escura que voc\u00ea usava antes */\n"
+"}\n"
+"\n"
+"QMessageBox {\n"
+"    background-color: #0005;\n"
+"}\n"
+"\n"
+"QMessageBox QLabel {\n"
+"    color: #000000;\n"
+"    background-color: transparent;\n"
+"}\n"
+"\n"
+"QMessageBox QPushButton {\n"
+"    background-color: #0078d4;\n"
+"    color: #ffffff;\n"
+"    border-radius: 4px;\n"
+"    padding: 5px 15px;\n"
+"    min-width: 60px;\n"
+"}\n"
+"\n"
+"QMessageBox QPushButton:hover {\n"
+"    background-color: #005a9e;\n"
+"}")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.centralwidget.setStyleSheet(u"*{\n"
@@ -168,7 +193,7 @@ class Ui_MainWindow(object):
         self.page_2 = QWidget()
         self.page_2.setObjectName(u"page_2")
         self.page_2.setEnabled(True)
-        self.page_2.setGeometry(QRect(0, 0, 79, 34))
+        self.page_2.setGeometry(QRect(0, 0, 73, 572))
         self.page_2.setSizeIncrement(QSize(0, 0))
         self.page_2.setStyleSheet(u"\n"
 "background-color: rgb(62, 62, 62);")
@@ -611,6 +636,7 @@ class Ui_MainWindow(object):
         self.txt_email.setText("")
         self.txt_email.setPlaceholderText(QCoreApplication.translate("MainWindow", u"EMAIL", None))
         self.lbl_empresas.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:16pt; font-weight:600;\">Empresas</span></p></body></html>", None))
+        self.txt_cnpj.setInputMask("")
         self.txt_cnpj.setPlaceholderText(QCoreApplication.translate("MainWindow", u"CNPJ", None))
         self.txt_logradouro.setPlaceholderText(QCoreApplication.translate("MainWindow", u"LOGRADOURO", None))
         self.txt_numero.setPlaceholderText(QCoreApplication.translate("MainWindow", u"NUMERO", None))
